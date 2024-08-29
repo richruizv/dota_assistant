@@ -20,6 +20,10 @@ final ThemeData dotaTheme = ThemeData(
     iconTheme: IconThemeData(color: Colors.white),
   ),
 
+  bottomAppBarTheme: const BottomAppBarTheme(
+    color: Color(0xFFA4230D),
+  ),
+
   buttonTheme: const ButtonThemeData(
     buttonColor: Color(0xFFD32F2F), // Dota 2 Red
     textTheme: ButtonTextTheme.primary,
@@ -29,6 +33,13 @@ final ThemeData dotaTheme = ThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
       backgroundColor: const Color(0xFFD32F2F),
+    ),
+  ),
+
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: Colors.white,
+      side: const BorderSide(color: Colors.white),
     ),
   ),
 

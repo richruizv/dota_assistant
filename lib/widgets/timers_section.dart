@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:dota_assistant/models/notification_details.dart';
 import 'package:dota_assistant/presenters/time_presenter.dart';
+import 'package:dota_assistant/services/local_notifications_service.dart';
 import 'package:dota_assistant/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +14,15 @@ class TimersSection extends StatefulWidget {
 
 class _TimersSectionState extends State<TimersSection> {
   Timer? _timer;
-
   int _counter = 0;
-  int _tormentorTimer = tormentorInterval;
+
+  int _tormentorTimer = firstTormentorInterval;
+  bool _activeTormentor = false;
+
+  bool _activeRoshan = true;
+  int _roshanMinTimer = roshanMinInterval;
+  int _roshanMaxTimer = roshanMaxInterval;
+
   int _experienceRuneTimer = experienceRuneInterval;
 
   @override
@@ -28,13 +36,43 @@ class _TimersSectionState extends State<TimersSection> {
       setState(() {
         _counter++;
 
-        if (_counter % tormentorInterval == 0) {
-          _tormentorTimer = tormentorInterval;
-        } else {
+        if (_tormentorTimer == 0) {
+          _tormentorTimer = secondTormentorInterval;
+          LocalNotificationsService().showLocalNotification(
+            title: 'Nuevo Tormentor',
+            body: 'Vamos por el tormentor culos',
+            details: CustomNotificationDetails.tormentor,
+          );
+          _activeTormentor = true;
+        }
+
+        if (!_activeTormentor) {
           _tormentorTimer--;
         }
 
+        if (_roshanMinTimer == 0) {
+          LocalNotificationsService().showLocalNotification(
+              title: 'Roshan comienza', body: 'Roshan podria estar activo');
+          _roshanMinTimer = roshanMinInterval;
+        }
+
+        if (_roshanMaxTimer == 0) {
+          LocalNotificationsService().showLocalNotification(
+              title: 'Roshan activo', body: 'Vamos por Roshan!');
+          _roshanMaxTimer = roshanMaxInterval;
+          _roshanMinTimer = roshanMinInterval;
+          _activeRoshan = true;
+        }
+
+        if (!_activeRoshan) {
+          _roshanMinTimer--;
+          _roshanMaxTimer--;
+        }
+
         if (_counter % experienceRuneInterval == 0) {
+          LocalNotificationsService().showLocalNotification(
+              title: 'Runa de experiencia',
+              body: 'Vamos por la runa de experiencia');
           _experienceRuneTimer = experienceRuneInterval;
         } else {
           _experienceRuneTimer--;
@@ -56,6 +94,7 @@ class _TimersSectionState extends State<TimersSection> {
         _elapsedTimeWidget(),
         _tormentorCounter(),
         _experienceRuneCounter(),
+        _roshanCounter(),
       ],
     );
   }
@@ -70,12 +109,31 @@ class _TimersSectionState extends State<TimersSection> {
   }
 
   Widget _tormentorCounter() {
-    return ListTile(
-      leading: const Icon(Icons.how_to_vote),
-      title: const Text('Siguiente Tormentor'),
-      subtitle:
-          Text(TimePresenter.secondsToTime(_tormentorTimer, showHours: false)),
-    );
+    if (_activeTormentor) {
+      return ListTile(
+        leading: const Icon(Icons.how_to_vote),
+        title: const Text(
+          'Tormentor activo',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        trailing: IconButton(
+          onPressed: () {
+            setState(() {
+              _activeTormentor = false;
+            });
+          },
+          icon: const Icon(Icons.done),
+          tooltip: 'Tormentor completado',
+        ),
+      );
+    } else {
+      return ListTile(
+        leading: const Icon(Icons.how_to_vote),
+        title: const Text('Siguiente Tormentor'),
+        subtitle: Text(
+            TimePresenter.secondsToTime(_tormentorTimer, showHours: false)),
+      );
+    }
   }
 
   Widget _experienceRuneCounter() {
@@ -86,5 +144,33 @@ class _TimersSectionState extends State<TimersSection> {
       subtitle: Text(
           TimePresenter.secondsToTime(_experienceRuneTimer, showHours: false)),
     );
+  }
+
+  Widget _roshanCounter() {
+    if (_activeRoshan) {
+      return ListTile(
+        leading: const Icon(Icons.bug_report),
+        title: const Text(
+          'Roshan activo',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        trailing: IconButton(
+          onPressed: () {
+            setState(() {
+              _activeRoshan = false;
+            });
+          },
+          icon: const Icon(Icons.done),
+          tooltip: 'Roshan completado',
+        ),
+      );
+    } else {
+      return ListTile(
+        leading: const Icon(Icons.bug_report),
+        title: const Text('Siguiente Roshan'),
+        subtitle: Text(
+            TimePresenter.secondsToTime(_roshanMaxTimer, showHours: false)),
+      );
+    }
   }
 }

@@ -1,3 +1,5 @@
+import 'package:dota_assistant/models/notification_details.dart';
+import 'package:dota_assistant/services/local_notifications_service.dart';
 import 'package:dota_assistant/utilities/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -12,17 +14,38 @@ class StartScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(appTitle),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: onStart,
-          style: ElevatedButton.styleFrom(
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(60),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.jpeg'),
+            fit: BoxFit.cover,
           ),
-          child: const Text(
-            'Start game',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: onStart,
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(60),
+              ),
+              child: const Text(
+                'Start game',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                LocalNotificationsService().showLocalNotification(
+                    title: 'prueba tormentor',
+                    body: 'prueba notification tormentor',
+                    details: CustomNotificationDetails.tormentor);
+              },
+              child: const Text('prueba notificacion tormentor'),
+            ),
+          ],
         ),
       ),
     );

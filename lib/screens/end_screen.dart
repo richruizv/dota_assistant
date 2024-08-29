@@ -11,7 +11,7 @@ class EndScreen extends StatelessWidget {
         title: const Text(appTitle),
       ),
       body: const Center(
-        child: Text('End Screen'),
+        child: Text('Juego terminado'),
       ),
     );
   }
